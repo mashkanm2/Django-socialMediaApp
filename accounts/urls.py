@@ -7,4 +7,4 @@ app_name='accounts'
 
 urlpatterns=[
     path('register/',views.UserRegisterView.as_view(),name='sign_up'),
-]
+] 
