@@ -1,1 +1,14 @@
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+## Files
 urlsDjango.txt
+db.sqlite3
+
+## Directorys
+
+## Formats
+
+
