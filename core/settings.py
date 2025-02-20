@@ -126,6 +126,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL='accounts.User'
 
-
+EXPIRED_TIME_OTPCODE_SECEND=600
 
 

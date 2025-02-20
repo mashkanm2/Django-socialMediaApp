@@ -44,7 +44,6 @@ class User(AbstractBaseUser):
 
 
 
-
 class OtpCode(models.Model):
     phone_number=models.CharField(max_length=11)
     code=models.PositiveSmallIntegerField()

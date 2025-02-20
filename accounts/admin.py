@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 
-from .forms import UserChangeForm, UserRegisterForm
+from .forms import UserChangeForm, UserRegisterFormAdmin
 from .models import User,OtpCode
 
 @admin.register(OtpCode)
@@ -11,7 +11,7 @@ class OtpCodeAdmin(admin.ModelAdmin):
 
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
-    add_form = UserRegisterForm
+    add_form = UserRegisterFormAdmin
 
     list_display=('user_name','email','phone_number','is_admin')
     list_filter = ('is_admin',)
