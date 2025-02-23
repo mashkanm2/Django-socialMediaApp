@@ -128,3 +128,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# deploy files (for now)
+Procfile
+setup.cfg
+wait-for-it.sh
+scripts
+markdown_tools
