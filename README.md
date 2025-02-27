@@ -40,6 +40,7 @@ Django-socialMediaApp is a Django-based web application that allows users to sha
 ## Acknowledgements
 
 - Django for providing the web framework.
+- Setup styleguide using cookiecutter from [amirbahador-hub](https://github.com/amirbahador-hub/django_style_guide)
 - The Django community for extensive documentation and support.
 
 
@@ -82,8 +83,16 @@ docker compose -f docker-compose.dev.yml up -d
 python manage.py runserver
 ```
 
-> [!NOTE]  
-> setup project using django_styleguide amirbahador-hub[https://github.com/amirbahador-hub/django_style_guide]
+## TaskList
+- [x] Create a user api (model,services,selectors,tests)
+- [x] Create a post api (model,services,selectors,tests)
+- [ ] Create a explore api (model,services,selectors,tests)
+- [ ] Create a services api (model,services,selectors,tests)
+- [ ] Optimization DB connectin (Redis and Cache)
+- [ ] Celery and asynchrone Tasks
+- [ ] Graph DB and datamining
+
+
 
 ## Contact
 
