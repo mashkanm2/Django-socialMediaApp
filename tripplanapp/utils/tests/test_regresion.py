@@ -4,7 +4,7 @@ from django.test import TestCase,Client
 from django.urls import reverse
 from unittest import mock
 
-from djagosocialmediaapp.users.models import BaseUser,OtpCode
+from tripplanapp.users.models import BaseUser,OtpCode
 
 
 class Test_UserModelRegister(TestCase):
@@ -48,7 +48,7 @@ class Test_UserModelRegister(TestCase):
         ## check deleted code
         self.assertEqual(OtpCode.objects.count(),0)
 
-    @mock.patch('djagosocialmediaapp.users.services.now')
+    @mock.patch('tripplanapp.users.services.now')
     def test_verifyOtpCode_expired(self,mock_now):
         mock_now.side_effect=[datetime.datetime.now(tz=datetime.timezone.utc)+datetime.timedelta(days=1)]
 

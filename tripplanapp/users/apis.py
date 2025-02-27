@@ -8,8 +8,8 @@ from django.db.models import Q
 from django.http import Http404
 
 from django.core.validators import MinLengthValidator
-from djagosocialmediaapp.users.models import BaseUser,UserProfile
-from djagosocialmediaapp.api.mixins import ApiAuthMixin
+from tripplanapp.users.models import BaseUser,UserProfile
+from tripplanapp.api.mixins import ApiAuthMixin
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from drf_spectacular.utils import extend_schema,OpenApiResponse
 from .validators import number_validator, special_char_validator, letter_validator
@@ -165,8 +165,8 @@ class UserRegisterVerifyOtpCodeView(APIView):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        exclude = ['user',]
-        # fields = '__all__'
+        exclude = ['user','created_at','updated_at']
+        
         
 
 class ProfileUpdateView(generics.RetrieveUpdateAPIView,ApiAuthMixin):
@@ -177,5 +177,5 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView,ApiAuthMixin):
 
     @extend_schema(responses=ProfileSerializer)
     def get_object(self):
-        return Response(ProfileSerializer(self.request.user.profile))
+        return Response(ProfileSerializer(self.request.user.profile).data)
 

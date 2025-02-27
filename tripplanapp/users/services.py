@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 from django.conf import settings
 from .models import BaseUser, OtpCode,UserProfile
-from config.tasks import send_OtpRegisterCode_task
+from .tasks import send_OtpRegisterCode_task
 
 def create_profile(*, user:BaseUser) -> UserProfile:
     return UserProfile.objects.create(user=user)

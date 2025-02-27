@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class CoreConfig(AppConfig):
-    name = 'djagosocialmediaapp.core'
+    name = 'tripplanapp.core'

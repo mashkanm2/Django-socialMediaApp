@@ -2,11 +2,12 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 from .models import BaseUser,OtpCode
-from .forms import UserChangeForm, UserRegisterFormAdmin
+from .forms import UserChangeForm, UserRegisterFormAdmin,UserProfileFormAdmin
 
 @admin.register(OtpCode)
 class OtpCodeAdmin(admin.ModelAdmin):
     list_display=('phone_number','code','created')
+
 
 class UserAdmin(BaseUserAdmin):
     form = UserChangeForm
@@ -29,3 +30,7 @@ class UserAdmin(BaseUserAdmin):
 
 admin.site.unregister(Group)
 admin.site.register(BaseUser,UserAdmin) 
+
+# @admin.register(UserProfileFormAdmin)
+# class UserProfileAdmin(admin.ModelAdmin):
+#     list_display=('user','first_name','last_name',"date_of_birth")

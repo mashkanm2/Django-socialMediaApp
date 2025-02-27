@@ -13,6 +13,6 @@ urlpatterns = [
     path("", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
     path('admin/', admin.site.urls),
-    path('api/', include(('djagosocialmediaapp.api.urls', 'api'))),
+    path('api/', include(('tripplanapp.api.urls', 'api')),name="api"),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

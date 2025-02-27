@@ -25,6 +25,9 @@ class BaseUserManager(BUM):
         user=self.create_user(user_name,email,phone_number,password)
         user.is_admin=True
         user.save(using=self._db)
+        ### create profile # TODO: check for transaction
+        _=UserProfile.objects.create(user=user)
+
         return user
 
 
@@ -71,7 +74,7 @@ class OtpCode(models.Model):
 
 
 class UserProfile(models.Model):
-    user=models.OneToOneField(BaseUser,on_delete=models.CASCADE,primary_key=True)
+    user=models.OneToOneField(BaseUser,on_delete=models.CASCADE,primary_key=True,related_name='profile')
     first_name = models.CharField(max_length=255,default='')
     last_name = models.CharField(max_length=255,default='')
     date_of_birth = models.DateField(null=True,blank=True)

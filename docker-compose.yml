@@ -7,7 +7,7 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_DB=djagosocialmediaapp
+      - POSTGRES_DB=tripplanapp
       - POSTGRES_USER=m2
       - POSTGRES_PASSWORD=qazWSX3edc
 
@@ -27,7 +27,7 @@ services:
     container_name: django
     command: ./docker/web_entrypoint.sh
     environment:
-      - DATABASE_URL=psql://m2:qazWSX3edc@db:5432/djagosocialmediaapp
+      - DATABASE_URL=psql://m2:qazWSX3edc@db:5432/tripplanapp
       - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
     volumes:
       - .:/app
@@ -42,11 +42,11 @@ services:
     build:
       context: .
       dockerfile: docker/production.Dockerfile
-    # command: celery -A djagosocialmediaapp.tasks worker -l info --without-gossip --without-mingle --without-heartbeat
+    # command: celery -A tripplanapp.tasks worker -l info --without-gossip --without-mingle --without-heartbeat
     container_name: worker
     command: ./docker/celery_entrypoint.sh
     environment:
-      - DATABASE_URL=psql://m2:qazWSX3edc@db:5432/djagosocialmediaapp
+      - DATABASE_URL=psql://m2:qazWSX3edc@db:5432/tripplanapp
       - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
     volumes:
       - .:/app
@@ -59,11 +59,11 @@ services:
     build:
       context: .
       dockerfile: docker/production.Dockerfile
-    # command: celery -A djagosocialmediaapp.tasks beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    # command: celery -A tripplanapp.tasks beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     container_name: beats
     command: ./docker/beats_entrypoint.sh
     environment:
-      - DATABASE_URL=psql://m2:qazWSX3edc@db:5432/djagosocialmediaapp
+      - DATABASE_URL=psql://m2:qazWSX3edc@db:5432/tripplanapp
       - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
     volumes:
       - .:/app

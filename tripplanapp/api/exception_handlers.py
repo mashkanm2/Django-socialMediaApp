@@ -6,7 +6,7 @@ from rest_framework import exceptions
 from rest_framework.serializers import as_serializer_error
 from rest_framework.response import Response
 
-from djagosocialmediaapp.core.exceptions import ApplicationError
+from tripplanapp.core.exceptions import ApplicationError
 
 
 def drf_default_with_modifications_exception_handler(exc, ctx):

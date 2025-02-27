@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.postgres.fields import ArrayField
-from djagosocialmediaapp.users.models import BaseUser
+from tripplanapp.users.models import BaseUser
 
 class TripLocationModel(models.Model):
     location = models.CharField(max_length=255,blank=True,null=True)
@@ -18,7 +18,8 @@ class TripCategoryModel(models.Model):
         return self.category
 
 class PostModel(models.Model):
-    location = models.ForeignKey(TripLocationModel, on_delete=models.CASCADE, null=True, blank=True)
+    location = models.ForeignKey(TripLocationModel, on_delete=models.CASCADE, null=True, blank=True,related_name='posts')
+    user=models.ForeignKey(BaseUser,on_delete=models.CASCADE,related_name='posts')
     title = models.CharField(max_length=255)
     files_urls = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
@@ -30,13 +31,13 @@ class PostModel(models.Model):
     def __str__(self):
         return self.title
 
-class PostVote(models.Model):
+class PostVoteModel(models.Model):
     user = models.ForeignKey(BaseUser, on_delete=models.CASCADE,related_name='votes')
     post = models.ForeignKey(PostModel, on_delete=models.CASCADE, related_name='votes')
     rate = models.IntegerField()
     created_at = models.DateTimeField(default=timezone.now)
 
-class Comment(models.Model):
+class CommentModel(models.Model):
     post = models.ForeignKey(PostModel, related_name='comments', on_delete=models.CASCADE)
     user = models.ForeignKey(BaseUser, on_delete=models.CASCADE,related_name='comments')
     content = models.TextField()
@@ -46,9 +47,9 @@ class Comment(models.Model):
         return f"{self.user.username} - {self.content[:20]}"
 
 
-class Reply(models.Model):
-    comment = models.ForeignKey(Comment, related_name='replies', on_delete=models.CASCADE)
-    user = models.ForeignKey(BaseUser, on_delete=models.CASCADE)
+class ReplyModel(models.Model):
+    comment = models.ForeignKey(CommentModel, related_name='replies', on_delete=models.CASCADE)
+    user = models.ForeignKey(BaseUser, on_delete=models.CASCADE,related_name='replies')
     content = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
 

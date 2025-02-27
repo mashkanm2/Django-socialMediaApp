@@ -14,10 +14,11 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
 # Application definition
 LOCAL_APPS = [
-    'djagosocialmediaapp.core.apps.CoreConfig',
-    'djagosocialmediaapp.users.apps.UsersConfig',
-    'djagosocialmediaapp.authentication.apps.AuthenticationConfig',
-    'djagosocialmediaapp.posts.apps.PostsConfig'
+    'tripplanapp.core.apps.CoreConfig',
+    'tripplanapp.users.apps.UsersConfig',
+    'tripplanapp.authentication.apps.AuthenticationConfig',
+    'tripplanapp.apiposts.apps.ApipostsConfig',
+    'tripplanapp.trips.apps.TripsConfig'
 ]
 
 # THIRD_PARTY_APPS = [
@@ -87,7 +88,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 # DATABASES = {
-#     'default': env.db('DATABASE_URL', default='psql://m2:qazWSX3edc@127.0.0.1:5432/djagosocialmediaapp'),
+#     'default': env.db('DATABASE_URL', default='psql://m2:qazWSX3edc@127.0.0.1:5432/tripplanapp'),
 # }
 # DATABASES['default']['ATOMIC_REQUESTS'] = True
 
@@ -153,8 +154,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'EXCEPTION_HANDLER': 'djagosocialmediaapp.api.exception_handlers.drf_default_with_modifications_exception_handler',
-    # 'EXCEPTION_HANDLER': 'djagosocialmediaapp.api.exception_handlers.hacksoft_proposed_exception_handler',
+    'EXCEPTION_HANDLER': 'tripplanapp.api.exception_handlers.drf_default_with_modifications_exception_handler',
+    # 'EXCEPTION_HANDLER': 'tripplanapp.api.exception_handlers.hacksoft_proposed_exception_handler',
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),

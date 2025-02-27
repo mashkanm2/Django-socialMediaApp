@@ -1,6 +1,6 @@
 from config.env import env, env_to_enum
 
-# from djagosocialmediaapp.emails.enums import EmailSendingStrategy
+# from tripplanapp.emails.enums import EmailSendingStrategy
 
 # # local | mailtrap
 # EMAIL_SENDING_STRATEGY = env_to_enum(

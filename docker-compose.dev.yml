@@ -8,7 +8,7 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_DB=djagosocialmediaapp
+      - POSTGRES_DB=tripplanapp
       - POSTGRES_USER=m2
       - POSTGRES_PASSWORD=qazWSX3edc
     volumes:
