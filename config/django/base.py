@@ -15,16 +15,23 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 # Application definition
 LOCAL_APPS = [
     'djagosocialmediaapp.core.apps.CoreConfig',
-    'djagosocialmediaapp.common.apps.CommonConfig',
     'djagosocialmediaapp.users.apps.UsersConfig',
     'djagosocialmediaapp.authentication.apps.AuthenticationConfig',
+    'djagosocialmediaapp.posts.apps.PostsConfig'
 ]
 
+# THIRD_PARTY_APPS = [
+#     'rest_framework',
+#     'django_filters',
+#     'django_celery_results',
+#     'django_celery_beat',
+#     'corsheaders',
+#     'drf_spectacular',
+#     'django_extensions',
+# ]
 THIRD_PARTY_APPS = [
     'rest_framework',
     'django_filters',
-    'django_celery_results',
-    'django_celery_beat',
     'corsheaders',
     'drf_spectacular',
     'django_extensions',
@@ -169,6 +176,9 @@ CACHE_TTL = 60 * 15
 APP_DOMAIN = env("APP_DOMAIN", default="http://localhost:8000")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+EXPIRED_TIME_OTPCODE_SECEND=60*10
+
 
 from config.settings.cors import *  # noqa
 from config.settings.jwt import *  # noqa

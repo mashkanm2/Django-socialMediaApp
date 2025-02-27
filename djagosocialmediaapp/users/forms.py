@@ -1,6 +1,6 @@
 
 from django import forms
-from .models import BaseUser
+from .models import BaseUser,UserProfile
 
 from django.db.models import Q
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
@@ -13,7 +13,7 @@ class UserRegisterFormAdmin(forms.ModelForm):
 
     class Meta:
         model=BaseUser
-        fields=('user_name','email','phone_number','first_name','last_name')
+        fields=('user_name','email','phone_number')
         ## TODO : check input to create in manager
     
     def clean_password2(self):
@@ -52,4 +52,11 @@ class UserChangeForm(forms.ModelForm):
 
     class Meta:
         model=BaseUser
-        fields=('user_name','email','phone_number','password','first_name','last_name')
+        fields=('user_name','email','phone_number','password')
+
+
+
+class UserProfileFormAdmin(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields="__all__"

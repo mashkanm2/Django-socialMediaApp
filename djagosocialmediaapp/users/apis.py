@@ -1,24 +1,19 @@
-import random
-from rest_framework import status
+
+from rest_framework import status,generics, permissions
 from rest_framework.response import Response
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
 from rest_framework import serializers
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
 from django.http import Http404
-from django.utils.timezone import now
-from django.conf import settings
+
 from django.core.validators import MinLengthValidator
-from .validators import number_validator, special_char_validator, letter_validator
-from config.tasks import send_OtpRegisterCode_task
-from djagosocialmediaapp.users.models import BaseUser,OtpCode
+from djagosocialmediaapp.users.models import BaseUser,UserProfile
 from djagosocialmediaapp.api.mixins import ApiAuthMixin
-from djagosocialmediaapp.users.selectors import get_profile
-from djagosocialmediaapp.users.services import register 
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-
-from drf_spectacular.utils import extend_schema
-
+from drf_spectacular.utils import extend_schema,OpenApiResponse
+from .validators import number_validator, special_char_validator, letter_validator
+from .services import register,activate_user_verifyCode
 
 
 class RegisterApi(APIView):
@@ -52,23 +47,19 @@ class RegisterApi(APIView):
         user_name=serializers.CharField(max_length=100)
         email = serializers.EmailField(max_length=255)
         phone_number=serializers.CharField(max_length=11)
-    
+
+
+
     @extend_schema(request=InputRegisterSerializer, responses=OutPutRegisterSerializer)
     def post(self, request):
         serializer = self.InputRegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            user=BaseUser.objects.create_user(user_name=serializer.validated_data.get("user_name"),
-                                         email=serializer.validated_data.get("email"),
-                                         email=serializer.validated_data.get("phone_number"),
-                                         password=serializer.validated_data.get("password"),
-                                         activate=False)
-            ### create otp Code
-            random_code=random.randint(1000,9999)
-            ## TODO : convert to celery task
-            send_OtpRegisterCode_task(serializer.validated_data.get("phone_number"),random_code)
-            # send_otp_code.apply_async(args=[serializer.validated_data.get("phone_number"),random_code])
-            OtpCode.objects.create(phone_number=serializer.validated_data.get("phone_number"),code=random_code)
+            user_name_=serializer.validated_data.get("user_name")
+            email_=serializer.validated_data.get("email")
+            phone_number_=serializer.validated_data.get("phone_number")
+            password_=serializer.validated_data.get("password")
+            user=register(user_name=user_name_,email=email_,phone_number=phone_number_, password=password_)
             
         except Exception as ex:
             return Response(
@@ -81,6 +72,7 @@ class RegisterApi(APIView):
             "phone_number":serializer.validated_data.get("phone_number"),
             },
             context={"request":request})
+        out_res.is_valid(raise_exception=False)
         # return Response(self.OutPutRegisterSerializer(user, context={"request":request}).data)
         return Response(out_res.data)
 
@@ -93,7 +85,8 @@ class UserRegisterVerifyOtpCodeView(APIView):
     class InputVerifyOtpCodeSerializer(serializers.Serializer):
         user_name=serializers.CharField(max_length=100)
         email = serializers.EmailField(max_length=255)
-        phone_number=serializers.CharField(max_length=11)  
+        phone_number=serializers.CharField(max_length=11)
+        otp_code=serializers.IntegerField()
 
     class OutputVerifyOtpCodeSerializer(serializers.ModelSerializer):
 
@@ -113,48 +106,39 @@ class UserRegisterVerifyOtpCodeView(APIView):
             data["access"] = str(refresh.access_token)
 
             return data
+        
+    
 
-
-    @extend_schema(request=InputVerifyOtpCodeSerializer, responses=OutputVerifyOtpCodeSerializer)
+    @extend_schema(request=InputVerifyOtpCodeSerializer,
+                   responses={
+                       201: OpenApiResponse(response=OutputVerifyOtpCodeSerializer),
+                       400:OpenApiResponse(),
+                        },
+                   )
     def post(self, request):
         serializer = self.InputVerifyOtpCodeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
+            
             user_name=serializer.validated_data.get("user_name")
             email = serializer.validated_data.get("email")
-            phone_number=serializer.validated_data("phone_number")
+            phone_number=serializer.validated_data.get("phone_number")
+            otp_code=serializer.validated_data.get("otp_code")
             if user_name and email and phone_number:
-                user_query = BaseUser.objects.filter(user_name=user_name,email=email,phone_number=phone_number)
-                user=get_object_or_404(user_query)
-
-                code_query=OtpCode.objects.get(phone_number=phone_number)
-                code_instance=get_object_or_404(code_query)
-
-                if code_instance.code != serializer.validated_data.get("otp_code"):
-                    return Response(
-                        f"Invalid Code {ex}",
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-
-                # DONE : check "code" timeDate expired
-                cu_datetime_utc=now()
-                code_time_spended=(cu_datetime_utc-code_instance.created).total_seconds()
-                if code_time_spended>settings.EXPIRED_TIME_OTPCODE_SECEND:
-                    return Response(
-                        f"Expired Code {ex}",
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
-                
-                # activate user and delete otp code
-                user.is_active=True
-                user.save()
-                code_instance.delete()  # ==> TODO: create job schuler to delete old codes
-
-
+                user,err_msg=activate_user_verifyCode(user_name=user_name,email=email,
+                                            phone_number=phone_number,otp_code=otp_code)
+            else:
+                return Response("Invalid Input Data.",status=status.HTTP_400_BAD_REQUEST)
+            
+            if err_msg and err_msg=="Invalid Code.":
+                return Response("Invalid Code.",status=status.HTTP_400_BAD_REQUEST)
+        
+            if err_msg and err_msg=="Expired Code.":
+                return Response("Expired Code.",status=status.HTTP_400_BAD_REQUEST)
         except Http404 as ef:
             return Response(
-                    f"Invalid Data {ex}",
-                    status=status.HTTP_404_NOT_FOUND
+                    f"Invalid Data {ef}",
+                    status=status.HTTP_400_BAD_REQUEST
                     )
 
         except Exception as ex:
@@ -163,4 +147,35 @@ class UserRegisterVerifyOtpCodeView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                     )
         return Response(self.OutputVerifyOtpCodeSerializer(user, context={"request":request}).data)
+
+
+# class UserProfileAPI(APIView):
+#     class InputProfileSerializer(serializers.Serializer):
+#         first_name = serializers.CharField(max_length=100, required=False)
+#         last_name = serializers.CharField(max_length=100, required=False)
+#         date_of_birth=serializers.DateField(format="%d-%m-%Y", input_formats=['%d-%m-%Y', 'iso-8601'],required=False)
+#         profile_picture=serializers.CharField(max_length=None,required=False)
+#         city_address=serializers.CharField(max_length=None,required=False)
+
+    
+#     def 
+
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        exclude = ['user',]
+        # fields = '__all__'
+        
+
+class ProfileUpdateView(generics.RetrieveUpdateAPIView,ApiAuthMixin):
+    queryset = UserProfile.objects.all()
+    serializer_class = ProfileSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(responses=ProfileSerializer)
+    def get_object(self):
+        return Response(ProfileSerializer(self.request.user.profile))
 

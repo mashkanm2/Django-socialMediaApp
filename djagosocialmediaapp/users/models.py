@@ -1,6 +1,5 @@
 from django.db import models
-from djagosocialmediaapp.common.models import BaseModel
-
+from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import BaseUserManager as BUM
 from django.contrib.auth.models import PermissionsMixin
@@ -29,16 +28,13 @@ class BaseUserManager(BUM):
         return user
 
 
-class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
+class BaseUser(AbstractBaseUser, PermissionsMixin):
 
     user_name=models.CharField(max_length=100,unique=True,db_index=True)
     email = models.EmailField(verbose_name = "email address")
     phone_number=models.CharField(max_length=11)
-    first_name = models.CharField(max_length=255,blank=True,null=True)
-    last_name = models.CharField(max_length=255,blank=True,null=True)
-    date_of_birth = models.DateField(null=True,blank=True)
-
-
+    created_at = models.DateTimeField(db_index=True, default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
     is_active = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 
@@ -72,6 +68,21 @@ class OtpCode(models.Model):
     def __str__(self):
         return f"{self.phone_number}-{self.code}-{self.created}"
     
+
+
+class UserProfile(models.Model):
+    user=models.OneToOneField(BaseUser,on_delete=models.CASCADE,primary_key=True)
+    first_name = models.CharField(max_length=255,default='')
+    last_name = models.CharField(max_length=255,default='')
+    date_of_birth = models.DateField(null=True,blank=True)
+    profile_picture = models.TextField(null=True,blank=True)
+    city_address=models.TextField(null=True,blank=True)
+    created_at = models.DateTimeField(db_index=True, default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.first_name}-{self.last_name}"
+
 
 
 

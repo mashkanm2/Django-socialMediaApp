@@ -129,7 +129,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-
+TODO_list.txt
 # deploy files (for now)
 Procfile
 setup.cfg
