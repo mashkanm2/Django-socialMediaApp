@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 from django.db.models import Q
 from django.http import Http404
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from django.core.validators import MinLengthValidator
 from tripplanapp.users.models import BaseUser,UserProfile
@@ -149,23 +150,28 @@ class UserRegisterVerifyOtpCodeView(APIView):
         return Response(self.OutputVerifyOtpCodeSerializer(user, context={"request":request}).data)
 
 
-# class UserProfileAPI(APIView):
-#     class InputProfileSerializer(serializers.Serializer):
-#         first_name = serializers.CharField(max_length=100, required=False)
-#         last_name = serializers.CharField(max_length=100, required=False)
-#         date_of_birth=serializers.DateField(format="%d-%m-%Y", input_formats=['%d-%m-%Y', 'iso-8601'],required=False)
-#         profile_picture=serializers.CharField(max_length=None,required=False)
-#         city_address=serializers.CharField(max_length=None,required=False)
+class UserAuthentication(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
 
-    
-#     def 
+        try:
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+
+        user = serializer.user
+        if not user.is_active:
+            return Response({"detail": "Permission Denied. User account is inactive."}, status=status.HTTP_403_FORBIDDEN)
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        exclude = ['user','created_at','updated_at']
+        # exclude = ['user','created_at','updated_at']
+        fields=("first_name","last_name","date_of_birth","profile_picture","city_address")
         
         
 

@@ -26,6 +26,7 @@ class PostModel(models.Model):
     # post_features = ArrayField(models.FloatField(),size=512,)  ## TODO : features of post using AI (postgrsql)
     post_features = models.TextField(blank=True,null=True)     ## TODO : sqlite
     categories = models.ManyToManyField(TripCategoryModel, related_name='posts')
+    avg_post_vote=models.DecimalField(max_digits=3,decimal_places=2) ## TODO: update using Cache
     
 
     def __str__(self):

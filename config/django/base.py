@@ -16,7 +16,6 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 LOCAL_APPS = [
     'tripplanapp.core.apps.CoreConfig',
     'tripplanapp.users.apps.UsersConfig',
-    'tripplanapp.authentication.apps.AuthenticationConfig',
     'tripplanapp.apiposts.apps.ApipostsConfig',
     'tripplanapp.trips.apps.TripsConfig'
 ]

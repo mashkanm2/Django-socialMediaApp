@@ -38,6 +38,7 @@ def activate_user_verifyCode(*,user_name,email:str,phone_number:str,otp_code:int
 
     if code_instance.code != otp_code:
         err_msg="Invalid Code."
+        return user,err_msg
 
 
     # DONE : check "code" timeDate expired
@@ -45,6 +46,7 @@ def activate_user_verifyCode(*,user_name,email:str,phone_number:str,otp_code:int
     code_time_spended=(cu_datetime_utc-code_instance.created).total_seconds()
     if code_time_spended>settings.EXPIRED_TIME_OTPCODE_SECEND:
         err_msg="Expired Code."
+        return user,err_msg
 
     # activate user and delete otp code
     user.is_active=True
