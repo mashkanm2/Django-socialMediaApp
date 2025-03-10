@@ -36,18 +36,21 @@ def upload_image_to_s3(*, image_data, image_name) -> dict:
         return {"sucess":False,"result":None}
 
 
-
+# @shared_task
 def image_vector_features(*, image_data, image_name)-> list:
     import base64
     import PIL.Image as Image
     import io
     import numpy as np
+    from django.core.files import File
     try:
         byte_data = image_data.encode(encoding='utf-8')
         image_bytes = base64.b64decode(byte_data)
         if image_data:
             img = Image.open(io.BytesIO(image_bytes))
             img.save(image_name, format=img.format)
+            with open(image_name, 'rb') as file:
+                picture = File(file)
             ## TODO : send to extraction model
             # image_vector = extract_image_features(image_name)
             temp_result=np.random.random(size=[512,])

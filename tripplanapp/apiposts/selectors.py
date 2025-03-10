@@ -1,7 +1,21 @@
 
+from django.db.models import QuerySet
+from .models import PostModel,PostVoteModel,TripCategoryModel,TripLocationModel
+from tripplanapp.users.models import BaseUser
+
+def post_detail(*,slug,user:BaseUser) -> PostModel:
+    ## TODO : add blucker user to return None
+    post = PostModel.objects.get(slug=slug)
+    return post
 
 def get_user_post():
     pass
+
+def post_list(*,filters=None,user:BaseUser) -> QuerySet[PostModel]:
+    filters=filters or {}
+    qs=PostModel.objects.filter(**filters)
+    return qs
+
 
 def get_list_of_userposts():
     pass

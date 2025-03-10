@@ -27,3 +27,5 @@ Faker
 factory-boy
 pytest
 pytest-django
+
+redis

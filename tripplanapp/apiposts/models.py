@@ -20,17 +20,18 @@ class TripCategoryModel(models.Model):
 class PostModel(models.Model):
     location = models.ForeignKey(TripLocationModel, on_delete=models.CASCADE, null=True, blank=True,related_name='posts')
     user=models.ForeignKey(BaseUser,on_delete=models.CASCADE,related_name='posts')
-    title = models.CharField(max_length=255)
+    slug=models.SlugField(primary_key=True,max_length=100)
+    post_caption = models.TextField(null=True,blank=True)
     files_urls = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
     # post_features = ArrayField(models.FloatField(),size=512,)  ## TODO : features of post using AI (postgrsql)
     post_features = models.TextField(blank=True,null=True)     ## TODO : sqlite
     categories = models.ManyToManyField(TripCategoryModel, related_name='posts')
-    avg_post_vote=models.DecimalField(max_digits=3,decimal_places=2) ## TODO: update using Cache
+    avg_post_vote=models.DecimalField(max_digits=4,decimal_places=2,default=10.0) ## TODO: update using Cache
     
 
     def __str__(self):
-        return self.title
+        return self.slug
 
 class PostVoteModel(models.Model):
     user = models.ForeignKey(BaseUser, on_delete=models.CASCADE,related_name='votes')

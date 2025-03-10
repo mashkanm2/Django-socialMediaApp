@@ -5,6 +5,10 @@ from config.env import env
 # CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='amqp://guest:guest@localhost//')
 # CELERY_RESULT_BACKEND = 'django-db'
 
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+
 # CELERY_TIMEZONE = 'UTC'
 
 # CELERY_TASK_SOFT_TIME_LIMIT = 20  # seconds

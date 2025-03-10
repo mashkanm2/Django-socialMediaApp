@@ -12,7 +12,7 @@ from django.core.validators import MinLengthValidator
 from tripplanapp.users.models import BaseUser,UserProfile
 from tripplanapp.api.mixins import ApiAuthMixin
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
-from drf_spectacular.utils import extend_schema,OpenApiResponse
+from drf_spectacular.utils import extend_schema,OpenApiResponse,extend_schema_field
 from .validators import number_validator, special_char_validator, letter_validator
 from .services import register,activate_user_verifyCode
 
@@ -51,7 +51,7 @@ class RegisterApi(APIView):
 
 
 
-    @extend_schema(request=InputRegisterSerializer, responses=OutPutRegisterSerializer)
+    @extend_schema(request=InputRegisterSerializer, responses=OutPutRegisterSerializer,tags=['user'])
     def post(self, request):
         serializer = self.InputRegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -97,6 +97,7 @@ class UserRegisterVerifyOtpCodeView(APIView):
             model = BaseUser 
             fields = ("user_name","email", "token", "created_at", "updated_at")
 
+        @extend_schema_field(field=dict)
         def get_token(self, user):
             data = dict()
             token_class = RefreshToken
@@ -115,6 +116,7 @@ class UserRegisterVerifyOtpCodeView(APIView):
                        201: OpenApiResponse(response=OutputVerifyOtpCodeSerializer),
                        400:OpenApiResponse(),
                         },
+                        tags=['user']
                    )
     def post(self, request):
         serializer = self.InputVerifyOtpCodeSerializer(data=request.data)
@@ -181,7 +183,7 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView,ApiAuthMixin):
     authentication_classes = [JWTAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
-    @extend_schema(responses=ProfileSerializer)
+    @extend_schema(responses=ProfileSerializer,tags=['user'])
     def get_object(self):
         return Response(ProfileSerializer(self.request.user.profile).data)
 
